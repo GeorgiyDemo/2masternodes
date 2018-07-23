@@ -64,12 +64,13 @@ def main():
 	while True:
 
 		LargeMasternode = requests.get("https://api.2masternodes.com/api/coin/gbx/masternode/[MASTERNODE]").json()["royalty"][0]
-			
+		if (LargeMasternode["to"] == None):
+			LargeMasternode = requests.get("https://api.2masternodes.com/api/coin/gbx/masternode/[MASTERNODE]").json()["royalty"][1]
 		LDateString = MySQLFetchOne("SELECT Value FROM UniversalTable WHERE Service='Ldate'")["Value"]
 		LBalance = MySQLFetchOne("SELECT Value FROM UniversalTable WHERE Service='balance'")["Value"]
 		dateformat = str(dateutil.parser.parse(LargeMasternode["paidAt"], dayfirst=True).replace(tzinfo=None)).replace("-","/")
 
-		if (LargeMasternode["paidAt"] != None) and (LDateString != dateformat):
+		if (LargeMasternode["paidAt"] != None) and (LDateString != dateformat) and (LargeMasternode["to"] != None):
 
 			ThisPayment = LargeMasternode["amount"]
 			NewBalance = str(float(LBalance)+float(ThisPayment))
